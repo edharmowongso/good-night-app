@@ -28,4 +28,62 @@
 #       enabled: "ON"
 
 en:
-  hello: "Hello world"
+  errors:
+    maintenance:
+      message: "We're currently undergoing maintenance. Please try again later."
+    
+    custom_errors:
+      user_not_found: "User not found or unauthorized"
+      bad_request: "Invalid request parameters"
+      unauthorized: "You are not authorized to perform this action"
+      forbidden: "Access forbidden"
+      not_found: "Resource not found"
+      unprocessable_entity: "Unable to process the request"
+      internal_server_error: "An internal server error occurred"
+      service_unavailable: "Service is temporarily unavailable"
+      
+    models:
+      user:
+        attributes:
+          name:
+            blank: "Name cannot be blank"
+            taken: "Name has already been taken"
+            
+      sleep_record:
+        attributes:
+          bedtime:
+            blank: "Bedtime cannot be blank"
+          wake_time:
+            invalid: "Wake time must be after bedtime"
+          duration_minutes:
+            blank: "Duration is required when wake time is present"
+            
+      follow:
+        attributes:
+          followed:
+            taken: "You are already following this user"
+            invalid: "Cannot follow yourself"
+            
+  api:
+    v1:
+      follows:
+        success:
+          followed: "Successfully followed %{name}"
+          unfollowed: "Successfully unfollowed %{name}"
+        errors:
+          user_not_found: "User to follow not found"
+          cannot_follow_self: "Cannot follow yourself"
+          already_following: "You are already following this user"
+          not_following: "You are not following this user"
+          
+      sleep_records:
+        success:
+          created: "Sleep record created successfully"
+        errors:
+          invalid_bedtime: "Invalid bedtime provided"
+          
+      users:
+        success:
+          created: "User created successfully"
+        errors:
+          invalid_data: "Invalid user data provided"
