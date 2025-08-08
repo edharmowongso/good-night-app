@@ -5,8 +5,12 @@ class Follows::CreateService < ApplicationService
   end
 
   def call
-    validate_follow_request
-    create_follow
+    ActiveRecord::Base.transaction do
+      validate_follow_request
+      create_follow
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    failure(e.message)
   end
 
   private

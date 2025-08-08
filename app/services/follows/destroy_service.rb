@@ -5,8 +5,12 @@ class Follows::DestroyService < ApplicationService
   end
 
   def call
-    validate_unfollow_request
-    destroy_follow
+    ActiveRecord::Base.transaction do
+      validate_unfollow_request
+      destroy_follow
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    failure(e.message)
   end
 
   private
