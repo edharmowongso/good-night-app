@@ -16,8 +16,8 @@ Rails.application.routes.draw do
           get :following_records
         end
       end
-
-      resources :follows, only: [:index]
+      
+      resources :follows, only: [:create, :destroy, :index]
     end
   end
 end

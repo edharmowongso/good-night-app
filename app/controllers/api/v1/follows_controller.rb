@@ -1,0 +1,49 @@
+class Api::V1::FollowsController < Api::V1::BaseController
+  def create
+    validated_params = validate_with_contract(Follows::CreateContract, params, current_user: current_user)
+    followed_user = User.find(validated_params[:followed_id])
+
+    result = Follows::CreateService.call(current_user, followed_user)
+    
+    if result.success?
+      render json: { 
+        message: result.data[:message],
+        following: serialize_object(result.data[:following], UserSerializer)
+      }, status: :created
+    else
+      render_error(result.error)
+    end
+  end
+
+  def destroy
+    validated_params = validate_with_contract(Follows::DestroyContract, params, current_user: current_user)
+    followed_user = User.find(validated_params[:id])
+
+    result = Follows::DestroyService.call(current_user, followed_user)
+    
+    if result.success?
+      render json: { 
+        message: result.data[:message],
+        unfollowed: serialize_object(result.data[:unfollowed], UserSerializer)
+      }
+    else
+      render_error(result.error)
+    end
+  end
+
+  def index
+    following = current_user.following.order(:name)
+    render json: {
+      following: serialize_collection(following, UserSerializer),
+      count: following.count
+    }
+  end
+
+  def followers
+    followers = current_user.followers.order(:name)
+    render json: {
+      followers: serialize_collection(followers, UserSerializer),
+      count: followers.count
+    }
+  end
+end
