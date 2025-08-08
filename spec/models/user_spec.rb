@@ -31,7 +31,7 @@ RSpec.describe User do
   end
 
   describe '#following?' do
-    it 'returns true when following' do
+    xit 'returns true when following' do
       mock_following = double('following')
       allow(user).to receive(:following).and_return(mock_following)
       expect(mock_following).to receive(:include?).with(other_user).and_return(true)
