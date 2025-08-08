@@ -32,18 +32,22 @@ class Api::V1::FollowsController < Api::V1::BaseController
   end
 
   def index
-    following = current_user.following.order(:name)
+    per_page = (params[:per_page] || 20).to_i.clamp(1, 100)
+    following = current_user.following.order(:name).page(params[:page]).per(per_page)
+    
     render json: {
       following: serialize_collection(following, UserSerializer),
-      count: following.count
+      pagination: pagination_meta(following)
     }
   end
 
   def followers
-    followers = current_user.followers.order(:name)
+    per_page = (params[:per_page] || 20).to_i.clamp(1, 100)
+    followers = current_user.followers.order(:name).page(params[:page]).per(per_page)
+    
     render json: {
       followers: serialize_collection(followers, UserSerializer),
-      count: followers.count
+      pagination: pagination_meta(followers)
     }
   end
 end

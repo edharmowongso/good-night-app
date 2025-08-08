@@ -25,6 +25,15 @@ class Api::V1::BaseController < ApplicationController
     @current_user
   end
 
+  def pagination_meta(collection)
+    {
+      current_page: collection.current_page,
+      per_page: collection.limit_value,
+      total_count: collection.total_count,
+      total_pages: collection.total_pages
+    }
+  end
+
   def render_error(message, status = :unprocessable_entity)
     render json: { 
       error_type: 'validation_error',
