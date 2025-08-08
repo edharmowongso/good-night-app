@@ -1,7 +1,7 @@
 class SleepRecordSerializer
   include JSONAPI::Serializer
   
-  attributes :id, :bedtime, :wake_time, :duration_minutes, :score, :notes, :status, :created_at
+  attributes :id, :bedtime, :wake_time, :duration_minutes, :score, :notes, :sleep_date, :status, :created_at
   
   belongs_to :user
   

@@ -11,6 +11,7 @@ class SleepRecord < ApplicationRecord
   enum status: { incomplete: 0, completed: 1, cancelled: 2 }
   
   before_create :set_jakarta_timezone
+  before_save :set_sleep_date
 
   def initialize(attributes = {})
     super
@@ -41,6 +42,14 @@ class SleepRecord < ApplicationRecord
 
   def set_jakarta_timezone
     self.bedtime = get_current_time_without_str('Asia/Jakarta') if bedtime.blank?
+  end
+
+  def set_sleep_date
+    if bedtime.present?
+      # Set sleep_date based on bedtime in Jakarta timezone
+      jakarta_time = bedtime.in_time_zone('Asia/Jakarta')
+      self.sleep_date = jakarta_time.to_date
+    end
   end
 
   def wake_time_after_bedtime

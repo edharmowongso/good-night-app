@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 3) do
+ActiveRecord::Schema[7.1].define(version: 4) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -34,10 +34,11 @@ ActiveRecord::Schema[7.1].define(version: 3) do
     t.integer "status", default: 0, null: false, comment: "Sleep record status: 0=incomplete, 1=completed, 2=cancelled"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["created_at"], name: "index_sleep_records_on_created_at"
+    t.date "sleep_date", comment: "Date of the sleep session (for efficient date filtering)"
     t.index ["duration_minutes"], name: "index_sleep_records_on_duration_minutes"
-    t.index ["score"], name: "index_sleep_records_on_score"
     t.index ["status"], name: "index_sleep_records_on_status"
+    t.index ["user_id", "sleep_date"], name: "idx_sleep_records_user_date"
+    t.index ["user_id", "status"], name: "idx_sleep_records_user_status"
     t.index ["user_id"], name: "index_sleep_records_on_user_id"
   end
 
