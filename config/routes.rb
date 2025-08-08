@@ -5,13 +5,13 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do      
-      resources :users, only: [:index, :show] do
+      resources :users, only: [:index, :create, :show] do
         member do
           get :followers
         end
       end
-
-      resources :sleep_records, only: [:index] do
+      
+      resources :sleep_records, only: [:index, :create, :update] do
         collection do
           get :following_records
         end
