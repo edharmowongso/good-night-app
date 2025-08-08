@@ -2,6 +2,8 @@ require_relative "boot"
 
 require "rails/all"
 
+require_relative '../app/middleware/maintenance_mode'
+
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
@@ -28,5 +30,14 @@ module GoodNightApp
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    # Custom middleware
+    config.middleware.use MaintenanceMode
+
+    # Autoload custom classes
+    config.eager_load_paths << Rails.root.join("app", "errors")
+    config.eager_load_paths << Rails.root.join("app", "middleware")
+    config.eager_load_paths << Rails.root.join("app", "contracts")
+    config.eager_load_paths << Rails.root.join("app", "services")
   end
 end
