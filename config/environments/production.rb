@@ -57,8 +57,17 @@ Rails.application.configure do
   # want to log everything, set the level to "debug".
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
 
-  # Use a different cache store in production.
-  # config.cache_store = :mem_cache_store
+  # Use Redis cache store in production
+  config.cache_store = :redis_cache_store, {
+    host: ENV.fetch('REDIS_HOST', 'localhost'),
+    port: ENV.fetch('REDIS_PORT', 6379),
+    db: ENV.fetch('REDIS_CACHE_DB', 1),
+    namespace: 'good_night_app',
+    expires_in: 1.hour,
+    reconnect_attempts: 3,
+    pool_size: ENV.fetch('RAILS_MAX_THREADS', 5).to_i,
+    pool_timeout: 5
+  }
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
   # config.active_job.queue_adapter = :resque

@@ -12,6 +12,7 @@ class SleepRecord < ApplicationRecord
   
   before_create :set_jakarta_timezone
   before_save :set_sleep_date
+  after_commit :invalidate_leaderboard_cache, on: [:create, :update], if: :completed?
 
   def initialize(attributes = {})
     super
@@ -57,6 +58,13 @@ class SleepRecord < ApplicationRecord
 
     if wake_time <= bedtime
       errors.add(:wake_time, "must be after bedtime")
+    end
+  end
+
+  def invalidate_leaderboard_cache
+    # Invalidate leaderboard cache for all users who follow this user
+    user.followers.find_each do |follower|
+      Rails.cache.delete("user_#{follower.id}_leaderboard")
     end
   end
 end

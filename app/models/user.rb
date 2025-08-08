@@ -21,28 +21,49 @@ class User < ApplicationRecord
 
   def follow(other_user)
     return false if self == other_user
-    active_follows.find_or_create_by(followed: other_user)
+    result = active_follows.find_or_create_by(followed: other_user)
+    invalidate_following_cache
+    result
   end
 
   def unfollow(other_user)
-    active_follows.find_by(followed: other_user)&.destroy
+    result = active_follows.find_by(followed: other_user)&.destroy
+    invalidate_following_cache
+    result
   end
 
   def following?(other_user)
-    following.include?(other_user)
+    cached_following_ids.include?(other_user.id)
   end
 
   def following_sleep_records_last_week
-    following_ids = following.pluck(:id)
-    return SleepRecord.none if following_ids.empty?
+    Rails.cache.fetch("user_#{id}_leaderboard", expires_in: 5.minutes) do
+      following_ids = cached_following_ids
+      return [] if following_ids.empty?
 
-    one_week_ago = get_current_time_without_str('Asia/Jakarta') - 1.week
-    current_time = get_current_time_without_str('Asia/Jakarta')
-    SleepRecord.joins(:user)
-               .where(user_id: following_ids)
-               .where(created_at: one_week_ago..current_time)
-               .completed
-               .includes(:user)
-               .order(duration_minutes: :desc)
+      one_week_ago = get_current_time_without_str('Asia/Jakarta') - 1.week
+      current_time = get_current_time_without_str('Asia/Jakarta')
+      SleepRecord.joins(:user)
+                 .where(user_id: following_ids)
+                 .where(created_at: one_week_ago..current_time)
+                 .completed
+                 .includes(:user)
+                 .order(duration_minutes: :desc)
+                 .limit(200)
+                 .to_a
+    end
+  end
+
+  private
+
+  def cached_following_ids
+    Rails.cache.fetch("user_#{id}_following_ids", expires_in: 15.minutes) do
+      following.pluck(:id)
+    end
+  end
+
+  def invalidate_following_cache
+    Rails.cache.delete("user_#{id}_following_ids")
+    Rails.cache.delete("user_#{id}_leaderboard")
   end
 end
