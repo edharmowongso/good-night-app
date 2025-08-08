@@ -73,7 +73,6 @@ class Api::V1::BaseController < ApplicationController
   end
 
   def handle_unauthorized_error(exception)
-    binding.pry
     render json: {
       error_type: 'unauthorized',
       message: I18n.t('errors.custom_errors.unauthorized')
